@@ -1,15 +1,16 @@
-import 'package:flutter/material.dart';
+import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter_gemini_ai/features/home/home_page.dart';
 
-class AppWidget extends StatefulWidget {
+class AppWidget extends StatelessWidget {
   const AppWidget({super.key});
 
   @override
-  State<AppWidget> createState() => _AppWidgetState();
-}
-
-class _AppWidgetState extends State<AppWidget> {
-  @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return const FluentApp(
+      title: 'Gemini App',
+      themeMode: ThemeMode.light,
+      debugShowCheckedModeBanner: false,
+      home: HomePage(),
+    );
   }
 }
