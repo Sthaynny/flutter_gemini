@@ -1,7 +1,7 @@
 <p align="center">
-   <img src="https://github.com/Sthaynny/flutter_gemini/assets/46109133/1c7d2b39-fa33-411a-bf93-77ba6734f8f2" alt="dt money" width="200"/>
-</p>
- 
+   <img src="https://github.com/Sthaynny/flutter_gemini/assets/46109133/d624d196-a9c7-4d44-a104-ca4de2c33c62" alt="dt money" width="200"/>
+</p>  
+
 <h1 align="center">Flutter Gamini</h1>
 
 <p align="center">
