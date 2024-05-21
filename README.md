@@ -1,8 +1,8 @@
 <p align="center">
-   <img src="https://user-images.githubusercontent.com/46109133/149638236-08219c77-c837-4883-b428-8bd5c864e850.png" alt="dt money" width="200"/>
+   <img src="https://github.com/Sthaynny/flutter_gemini/assets/46109133/1c7d2b39-fa33-411a-bf93-77ba6734f8f2" alt="dt money" width="200"/>
 </p>
-
-<h1 align="center">Nome do projeto</h1>
+ 
+<h1 align="center">Flutter Gamini</h1>
 
 <p align="center">
    <a href="https://www.linkedin.com/in/igor-sthaynny/">
