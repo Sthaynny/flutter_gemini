@@ -35,126 +35,138 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const Text('CHAT AI'),
-        Expanded(
-            child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: ListView.builder(
-              itemCount: _chat.history.length,
-              controller: _controller,
-              itemBuilder: (_, index) {
-                final content = _chat.history.toList()[index];
-                final isUser = content.role == 'user';
-                var text = content.parts
-                    .whereType<TextPart>()
-                    .map<String>((e) => e.text)
-                    .join('');
-                return Container(
-                  color: isUser ? Colors.green : Colors.blue,
-                  child: ListTile(
-                    leading: isUser ? null : const Icon(FluentIcons.robot),
-                    trailing:
-                        !isUser ? null : const Icon(FluentIcons.user_clapper),
-                    title: SingleChildScrollView(
-                      child: MarkdownBody(
-                        data: text,
+    return ScaffoldPage(
+      content: Column(
+        children: [
+          const Text('DINO IA'),
+          Expanded(
+              child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ListView.builder(
+                itemCount: _chat.history.length,
+                controller: _controller,
+                itemBuilder: (_, index) {
+                  final content = _chat.history.toList()[index];
+                  final isUser = content.role == 'user';
+                  var text = content.parts
+                      .whereType<TextPart>()
+                      .map<String>((e) => e.text)
+                      .join('');
+                  return Container(
+                    color: isUser ? Colors.green : Colors.blue,
+                    child: ListTile(
+                      contentAlignment: isUser
+                          ? CrossAxisAlignment.end
+                          : CrossAxisAlignment.start,
+                      leading: isUser ? null : const Icon(FluentIcons.robot),
+                      trailing:
+                          !isUser ? null : const Icon(FluentIcons.user_clapper),
+                      title: Container(
+                        padding: const EdgeInsets.all(8.0),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8.0),
+                          color: Colors.purple,
+                        ),
+                        child: SingleChildScrollView(
+                          child: MarkdownBody(
+                            data: text,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                );
-              }),
-        )),
-        if (isLoading) const ProgressRing(),
-        Row(
-          children: [
-            if (file != null)
-              Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(FluentIcons.delete),
-                    onPressed: isLoading
-                        ? null
-                        : () {
+                  );
+                }),
+          )),
+          if (isLoading) const ProgressRing(),
+          Row(
+            children: [
+              if (file != null)
+                Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(FluentIcons.delete),
+                      onPressed: isLoading
+                          ? null
+                          : () {
+                              setState(() {
+                                file = null;
+                              });
+                            },
+                    ),
+                    Image.file(
+                      file!,
+                      height: 50,
+                      width: 50,
+                    )
+                  ],
+                )
+              else
+                IconButton(
+                  icon: const Icon(FluentIcons.file_image),
+                  onPressed: isLoading
+                      ? null
+                      : () async {
+                          FilePickerResult? result =
+                              await FilePicker.platform.pickFiles();
+
+                          if (result != null) {
                             setState(() {
-                              file = null;
+                              file = File(result.files.single.path!);
                             });
-                          },
-                  ),
-                  Image.file(
-                    file!,
-                    height: 50,
-                    width: 50,
-                  )
-                ],
-              )
-            else
-              IconButton(
-                icon: const Icon(FluentIcons.file_image),
-                onPressed: isLoading
-                    ? null
-                    : () async {
-                        FilePickerResult? result =
-                            await FilePicker.platform.pickFiles();
+                          } else {
+                            // User canceled the picker
+                          }
+                        },
+                ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextBox(
+                    controller: txtController,
+                    enabled: !isLoading,
+                    onSubmitted: (text) async {
+                      final message = text;
+                      try {
+                        setState(() {
+                          isLoading = true;
+                          txtController.clear();
+                        });
 
-                        if (result != null) {
-                          setState(() {
-                            file = File(result.files.single.path!);
-                          });
+                        if (file != null) {
+                          final imageBytes = await file!.readAsBytes();
+                          final content = Content.multi([
+                            TextPart(message),
+                            DataPart('image/${file!.path.split('.').last}',
+                                imageBytes),
+                          ]);
+
+                          final response = await _chat.sendMessage(content);
+
+                          log(response.toString());
                         } else {
-                          // User canceled the picker
+                          var response = await _chat.sendMessage(
+                            Content.text(message),
+                          );
+                          var text = response.text;
+
+                          log(text.toString());
                         }
-                      },
-              ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextBox(
-                  controller: txtController,
-                  enabled: !isLoading,
-                  onSubmitted: (text) async {
-                    final message = text;
-                    try {
-                      setState(() {
-                        isLoading = true;
-                        txtController.clear();
-                      });
-
-                      if (file != null) {
-                        final imageBytes = await file!.readAsBytes();
-                        final content = Content.multi([
-                          TextPart(message),
-                          DataPart('image/${file!.path.split('.').last}',
-                              imageBytes),
-                        ]);
-
-                        final response = await _chat.sendMessage(content);
-
-                        log(response.toString());
-                      } else {
-                        var response = await _chat.sendMessage(
-                          Content.text(message),
-                        );
-                        var text = response.text;
-
-                        log(text.toString());
+                      } finally {
+                        setState(() {
+                          txtController.clear();
+                          isLoading = false;
+                          file = null;
+                          _scrollDown();
+                        });
                       }
-                    } finally {
-                      setState(() {
-                        txtController.clear();
-                        isLoading = false;
-                        file = null;
-                        _scrollDown();
-                      });
-                    }
-                  },
+                    },
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
-      ],
+            ],
+          ),
+        ],
+      ),
     );
   }
 
