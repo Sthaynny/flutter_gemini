@@ -1,0 +1,1 @@
+const dinoIaString = 'Dino IA';

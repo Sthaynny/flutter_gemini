@@ -4,7 +4,10 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gemini_ai/shared/animations/animations_enum.dart';
-import 'package:flutter_gemini_ai/shared/style/color.dart';
+import 'package:flutter_gemini_ai/shared/style/colors/color.dart';
+import 'package:flutter_gemini_ai/shared/utils/constants/constants.dart';
+import 'package:flutter_gemini_ai/shared/utils/roles/roles.dart';
+import 'package:flutter_gemini_ai/shared/utils/strings/strings.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
@@ -31,7 +34,7 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     super.initState();
     gemini = GenerativeModel(
-      model: 'gemini-1.5-pro-latest',
+      model: modelGeminiConst,
       apiKey: const String.fromEnvironment('API_KEY'),
     );
     _chat = gemini.startChat();
@@ -42,7 +45,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Dino IA',
+          dinoIaString,
           style: GoogleFonts.figtree(fontSize: 24, color: Colors.white),
         ),
         backgroundColor: primaryColor,
@@ -57,7 +60,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 controller: _controller,
                 itemBuilder: (_, index) {
                   final content = _chat.history.toList()[index];
-                  final isUser = content.role == 'user';
+                  final isUser = content.role == userRole;
                   var text = content.parts
                       .whereType<TextPart>()
                       .map<String>((e) => e.text)
