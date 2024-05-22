@@ -42,8 +42,8 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'DINO IA',
-          style: GoogleFonts.caveat(fontSize: 24),
+          'Dino IA',
+          style: GoogleFonts.figtree(fontSize: 24, color: Colors.white),
         ),
         backgroundColor: primaryColor,
       ),
@@ -65,7 +65,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 16),
                     child: ListTile(
-                      titleAlignment: ListTileTitleAlignment.top,
+                      titleAlignment: ListTileTitleAlignment.bottom,
                       leading: isUser
                           ? null
                           : Lottie.asset(
@@ -97,6 +97,7 @@ class _ChatScreenState extends State<ChatScreen> {
           if (isLoading)
             Lottie.asset(
               AnimationEnum.loading.path,
+              height: 150,
             ),
           Container(
             color: primaryColor,
@@ -124,7 +125,10 @@ class _ChatScreenState extends State<ChatScreen> {
                   )
                 else
                   IconButton(
-                    icon: const Icon(Icons.image_outlined),
+                    icon: const Icon(
+                      Icons.image_outlined,
+                      color: Colors.white,
+                    ),
                     onPressed: isLoading
                         ? null
                         : () async {
@@ -149,11 +153,16 @@ class _ChatScreenState extends State<ChatScreen> {
                       onFieldSubmitted: (_) {
                         sendIA();
                       },
+                      cursorColor: Colors.white,
+                      style: GoogleFonts.figtree(color: Colors.white),
                     ),
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.send),
+                  icon: const Icon(
+                    Icons.send,
+                    color: Colors.white,
+                  ),
                   onPressed: sendIA,
                 ),
               ],
