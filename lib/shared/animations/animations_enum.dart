@@ -1,9 +1,9 @@
 enum AnimationEnum {
-  splash,
+  dino,
   loading,
-  ;
+  person;
 
   const AnimationEnum();
 
-  String get path => '$name.json';
+  String get path => 'assets/$name.json';
 }

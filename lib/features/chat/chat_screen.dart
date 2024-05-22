@@ -2,18 +2,22 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_gemini_ai/shared/animations/animations_enum.dart';
+import 'package:flutter_gemini_ai/shared/style/color.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:lottie/lottie.dart';
 
-class ChatPage extends StatefulWidget {
-  const ChatPage({super.key});
+class ChatScreen extends StatefulWidget {
+  const ChatScreen({super.key});
 
   @override
-  State<ChatPage> createState() => _ChatPageState();
+  State<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _ChatPageState extends State<ChatPage> {
+class _ChatScreenState extends State<ChatScreen> {
   var question = '';
   var answer = '';
   var isLoading = false;
@@ -35,10 +39,16 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ScaffoldPage(
-      content: Column(
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'DINO IA',
+          style: GoogleFonts.caveat(fontSize: 16),
+        ),
+        backgroundColor: primaryColor,
+      ),
+      body: Column(
         children: [
-          const Text('DINO IA'),
           Expanded(
               child: Padding(
             padding: const EdgeInsets.all(8.0),
@@ -55,12 +65,19 @@ class _ChatPageState extends State<ChatPage> {
                   return Container(
                     color: isUser ? Colors.green : Colors.blue,
                     child: ListTile(
-                      contentAlignment: isUser
-                          ? CrossAxisAlignment.end
-                          : CrossAxisAlignment.start,
-                      leading: isUser ? null : const Icon(FluentIcons.robot),
-                      trailing:
-                          !isUser ? null : const Icon(FluentIcons.user_clapper),
+                      titleAlignment: ListTileTitleAlignment.top,
+                      leading: isUser
+                          ? null
+                          : Lottie.asset(
+                              AnimationEnum.dino.path,
+                              height: 100,
+                            ),
+                      trailing: !isUser
+                          ? null
+                          : Lottie.asset(
+                              AnimationEnum.person.path,
+                              height: 100,
+                            ),
                       title: Container(
                         padding: const EdgeInsets.all(8.0),
                         decoration: BoxDecoration(
@@ -77,14 +94,18 @@ class _ChatPageState extends State<ChatPage> {
                   );
                 }),
           )),
-          if (isLoading) const ProgressRing(),
+          if (isLoading)
+            Lottie.asset(
+              AnimationEnum.loading.path,
+              width: 100,
+            ),
           Row(
             children: [
               if (file != null)
                 Row(
                   children: [
                     IconButton(
-                      icon: const Icon(FluentIcons.delete),
+                      icon: const Icon(Icons.delete),
                       onPressed: isLoading
                           ? null
                           : () {
@@ -102,7 +123,7 @@ class _ChatPageState extends State<ChatPage> {
                 )
               else
                 IconButton(
-                  icon: const Icon(FluentIcons.file_image),
+                  icon: const Icon(Icons.image_outlined),
                   onPressed: isLoading
                       ? null
                       : () async {
@@ -121,10 +142,10 @@ class _ChatPageState extends State<ChatPage> {
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: TextBox(
+                  child: TextFormField(
                     controller: txtController,
                     enabled: !isLoading,
-                    onSubmitted: (text) async {
+                    onFieldSubmitted: (text) async {
                       final message = text;
                       try {
                         setState(() {
