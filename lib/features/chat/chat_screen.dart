@@ -43,7 +43,7 @@ class _ChatScreenState extends State<ChatScreen> {
       appBar: AppBar(
         title: Text(
           'DINO IA',
-          style: GoogleFonts.caveat(fontSize: 16),
+          style: GoogleFonts.caveat(fontSize: 24),
         ),
         backgroundColor: primaryColor,
       ),
@@ -62,8 +62,8 @@ class _ChatScreenState extends State<ChatScreen> {
                       .whereType<TextPart>()
                       .map<String>((e) => e.text)
                       .join('');
-                  return Container(
-                    color: isUser ? Colors.green : Colors.blue,
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
                     child: ListTile(
                       titleAlignment: ListTileTitleAlignment.top,
                       leading: isUser
@@ -82,7 +82,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         padding: const EdgeInsets.all(8.0),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8.0),
-                          color: Colors.purple,
+                          color: secundaryColor,
                         ),
                         child: SingleChildScrollView(
                           child: MarkdownBody(
@@ -97,94 +97,67 @@ class _ChatScreenState extends State<ChatScreen> {
           if (isLoading)
             Lottie.asset(
               AnimationEnum.loading.path,
-              width: 100,
             ),
-          Row(
-            children: [
-              if (file != null)
-                Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: isLoading
-                          ? null
-                          : () {
+          Container(
+            color: primaryColor,
+            child: Row(
+              children: [
+                if (file != null)
+                  Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.delete),
+                        onPressed: isLoading
+                            ? null
+                            : () {
+                                setState(() {
+                                  file = null;
+                                });
+                              },
+                      ),
+                      Image.file(
+                        file!,
+                        height: 50,
+                        width: 50,
+                      )
+                    ],
+                  )
+                else
+                  IconButton(
+                    icon: const Icon(Icons.image_outlined),
+                    onPressed: isLoading
+                        ? null
+                        : () async {
+                            FilePickerResult? result =
+                                await FilePicker.platform.pickFiles();
+
+                            if (result != null) {
                               setState(() {
-                                file = null;
+                                file = File(result.files.single.path!);
                               });
-                            },
+                            } else {
+                              // User canceled the picker
+                            }
+                          },
+                  ),
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      controller: txtController,
+                      enabled: !isLoading,
+                      onFieldSubmitted: (_) {
+                        sendIA();
+                      },
                     ),
-                    Image.file(
-                      file!,
-                      height: 50,
-                      width: 50,
-                    )
-                  ],
-                )
-              else
-                IconButton(
-                  icon: const Icon(Icons.image_outlined),
-                  onPressed: isLoading
-                      ? null
-                      : () async {
-                          FilePickerResult? result =
-                              await FilePicker.platform.pickFiles();
-
-                          if (result != null) {
-                            setState(() {
-                              file = File(result.files.single.path!);
-                            });
-                          } else {
-                            // User canceled the picker
-                          }
-                        },
-                ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextFormField(
-                    controller: txtController,
-                    enabled: !isLoading,
-                    onFieldSubmitted: (text) async {
-                      final message = text;
-                      try {
-                        setState(() {
-                          isLoading = true;
-                          txtController.clear();
-                        });
-
-                        if (file != null) {
-                          final imageBytes = await file!.readAsBytes();
-                          final content = Content.multi([
-                            TextPart(message),
-                            DataPart('image/${file!.path.split('.').last}',
-                                imageBytes),
-                          ]);
-
-                          final response = await _chat.sendMessage(content);
-
-                          log(response.toString());
-                        } else {
-                          var response = await _chat.sendMessage(
-                            Content.text(message),
-                          );
-                          var text = response.text;
-
-                          log(text.toString());
-                        }
-                      } finally {
-                        setState(() {
-                          txtController.clear();
-                          isLoading = false;
-                          file = null;
-                          _scrollDown();
-                        });
-                      }
-                    },
                   ),
                 ),
-              ),
-            ],
+                IconButton(
+                  icon: const Icon(Icons.send),
+                  onPressed: sendIA,
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -201,5 +174,41 @@ class _ChatScreenState extends State<ChatScreen> {
         curve: Curves.easeOutCirc,
       ),
     );
+  }
+
+  void sendIA() async {
+    final message = txtController.text;
+    try {
+      setState(() {
+        isLoading = true;
+        txtController.clear();
+      });
+
+      if (file != null) {
+        final imageBytes = await file!.readAsBytes();
+        final content = Content.multi([
+          TextPart(message),
+          DataPart('image/${file!.path.split('.').last}', imageBytes),
+        ]);
+
+        final response = await _chat.sendMessage(content);
+
+        log(response.toString());
+      } else {
+        var response = await _chat.sendMessage(
+          Content.text(message),
+        );
+        var text = response.text;
+
+        log(text.toString());
+      }
+    } finally {
+      setState(() {
+        txtController.clear();
+        isLoading = false;
+        file = null;
+        _scrollDown();
+      });
+    }
   }
 }
