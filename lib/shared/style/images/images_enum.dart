@@ -6,5 +6,5 @@ enum ImagesEnum {
 
   const ImagesEnum();
 
-  String get path => 'images/${name.camelToSnakeCase}';
+  String get path => 'assets/images/${name.camelToSnakeCase}.png';
 }
