@@ -42,6 +42,14 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   @override
+  void dispose() {
+    dataNotifier.dispose();
+    txtController.dispose();
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -58,61 +66,73 @@ class _ChatScreenState extends State<ChatScreen> {
       body: Column(
         children: [
           Expanded(
-              child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ValueListenableBuilder(
-                valueListenable: dataNotifier,
-                builder: (_, __, ___) {
-                  return ListView.builder(
-                      itemCount: _chat.history.length,
-                      controller: _controller,
-                      itemBuilder: (_, index) {
-                        final content = _chat.history.toList()[index];
-                        final isUser = content.role == userRole;
-                        var text = content.parts
-                            .whereType<TextPart>()
-                            .map<String>((e) => e.text)
-                            .join('');
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 16),
-                          child: ListTile(
-                            titleAlignment: ListTileTitleAlignment.bottom,
-                            leading: isUser
-                                ? null
-                                : Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(15),
-                                    ),
-                                    child:
-                                        Image.asset(ImagesEnum.robotMini.path)),
-                            title: Container(
-                              padding: const EdgeInsets.all(8.0),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.only(
-                                  topLeft: const Radius.circular(10),
-                                  topRight: isUser
-                                      ? Radius.zero
-                                      : const Radius.circular(10),
-                                  bottomLeft: isUser
-                                      ? const Radius.circular(10)
-                                      : Radius.zero,
-                                  bottomRight: const Radius.circular(10),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ValueListenableBuilder(
+                  valueListenable: dataNotifier,
+                  builder: (_, __, ___) {
+                    return ListView.builder(
+                        itemCount: _chat.history.length + 1,
+                        controller: _controller,
+                        itemBuilder: (_, index) {
+                          if (index == _chat.history.length) {
+                            return const SizedBox(
+                              height: 100,
+                            );
+                          }
+                          final content = _chat.history.toList()[index];
+                          final isUser = content.role == userRole;
+                          var text = content.parts
+                              .whereType<TextPart>()
+                              .map<String>((e) => e.text)
+                              .join('');
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 16),
+                            child: ListTile(
+                              titleAlignment: ListTileTitleAlignment.bottom,
+                              leading: isUser
+                                  ? null
+                                  : Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(15),
+                                      ),
+                                      child: Image.asset(
+                                          ImagesEnum.robotMini.path)),
+                              title: Container(
+                                padding: const EdgeInsets.all(8.0),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: const Radius.circular(10),
+                                    topRight: isUser
+                                        ? Radius.zero
+                                        : const Radius.circular(10),
+                                    bottomLeft: isUser
+                                        ? const Radius.circular(10)
+                                        : Radius.zero,
+                                    bottomRight: const Radius.circular(10),
+                                  ),
+                                  color: isUser
+                                      ? primaryColor.withOpacity(0.5)
+                                      : Colors.grey.shade400,
                                 ),
-                                color: isUser
-                                    ? primaryColor.withOpacity(0.5)
-                                    : Colors.grey.shade400,
-                              ),
-                              child: SingleChildScrollView(
-                                child: MarkdownBody(
-                                  data: text,
+                                child: SingleChildScrollView(
+                                  child: MarkdownBody(
+                                    data: text,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        );
-                      });
-                }),
-          )),
+                          );
+                        });
+                  }),
+            ),
+          ),
+        ],
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
           ValueListenableBuilder(
               valueListenable: dataNotifier,
               builder: (_, data, __) {
@@ -124,23 +144,20 @@ class _ChatScreenState extends State<ChatScreen> {
                   height: 150,
                 );
               }),
-          const SizedBox(
-            height: 100,
-          )
+          ValueListenableBuilder(
+              valueListenable: dataNotifier,
+              builder: (_, data, __) {
+                return FloatInput(
+                  textEditingController: txtController,
+                  isLoading: data.$1,
+                  setFile: (File? value) {
+                    dataNotifier.value = (false, value);
+                  },
+                  onSubmitted: sendIA,
+                );
+              }),
         ],
       ),
-      floatingActionButton: ValueListenableBuilder(
-          valueListenable: dataNotifier,
-          builder: (_, data, __) {
-            return FloatInput(
-              textEditingController: txtController,
-              isLoading: data.$1,
-              setFile: (File? value) {
-                dataNotifier.value = (false, value);
-              },
-              onSubmitted: sendIA,
-            );
-          }),
     );
   }
 
