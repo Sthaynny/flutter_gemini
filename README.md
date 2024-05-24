@@ -2,7 +2,7 @@
    <img src="https://github.com/Sthaynny/flutter_gemini/assets/46109133/d624d196-a9c7-4d44-a104-ca4de2c33c62" alt="dt money" width="200"/>
 </p>  
 
-<h1 align="center">Flutter Gamini</h1>
+<h1 align="center">Flutter Gemini</h1>
 
 <p align="center">
    <a href="https://www.linkedin.com/in/igor-sthaynny/">
@@ -38,19 +38,15 @@
 - [:page_facing_up: Licença](#page_facing_up-licença)
 
 # :camera: Screenshots
-<div align="center">
-   <img src="https://user-images.githubusercontent.com/46109133/155231022-7d54b0eb-a0c5-4e60-a244-3e5c30fc9373.jpeg" width="230"/>
-   <img src="https://user-images.githubusercontent.com/46109133/155231022-7d54b0eb-a0c5-4e60-a244-3e5c30fc9373.jpeg" width="230"/>
-   <img src="https://user-images.githubusercontent.com/46109133/155231022-7d54b0eb-a0c5-4e60-a244-3e5c30fc9373.jpeg" width="230"/>
 
-</div>
-  
-
+https://github.com/Sthaynny/flutter_gemini/assets/46109133/9800603a-a993-43c7-b6d3-4ea9d4a20e59
 
 # :rocket: Tecnologias
-Esse:
+Este projeto visa integrar o Gemini IA da Google em um aplicativo desenvolvido com Flutter, proporcionando uma experiência de usuário avançada e enriquecida com inteligência artificial. A implementação do Gemini IA permitirá ao aplicativo realizar tarefas complexas de análise e interpretação de dados, oferecendo funcionalidades aprimoradas e personalizadas.
 
-Descreva as tecnologias usadas aqui
+Objetivos
+Integração de IA: Incorporar as capacidades do Gemini IA no aplicativo Flutter para melhorar a eficiência e a precisão das funcionalidades existentes.
+Análise de Dados: Utilizar o poder de processamento de dados do Gemini IA para fornecer insights profundos e personalizados aos usuários.
 
 # :computer: Como rodar
 
